@@ -30,7 +30,15 @@ namespace FoodDiaryDb
                     services.AddDbContext<FoodDbContext>(options =>
                         options.UseSqlite("Data Source=C:\\Users\\79217\\source\\repos\\FoodDiary\\DataBase\\foodDiary.db"));
 
+                    services.AddSingleton<IFoodDbContextFactory>(provider =>
+                    {
+                        var options = provider.GetRequiredService<DbContextOptions<FoodDbContext>>();
+                        return new DbContextFactory(options);
+                    });
+
                     // Регистрация репозиториев и сервисов
+                    // AddSingleton - Объект создается один раз за время жизни приложения
+                    // АddScoped - объект хранит данные, которые должны быть уникальны для каждой операции --> не подходит
                     services.AddSingleton<IFoodRepository, FoodRepository>();
                     services.AddSingleton<IUserInputManager, UserInputManager>();
                     services.AddSingleton<ICalorieCalculator, CalorieCalculator>();
@@ -52,7 +60,7 @@ namespace FoodDiaryDb
             var foodDiaryManager = host.Services.GetRequiredService<IFoodDiaryManager>();
 
             // Инициализация данных
-            await foodDiaryManager.InitializerAsync(host.Services.GetRequiredService < IUserDataInitializer > ());
+            await foodDiaryManager.InitializerAsync(host.Services.GetRequiredService<IUserDataInitializer>());
         }
     }
 }

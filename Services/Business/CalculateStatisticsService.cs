@@ -3,6 +3,11 @@ using Core.Interfaces.Services;
 using Core.Models;
 namespace Services.Business
 {
+    // выполняет следующие задачи:
+    // 1) Фильтрует данные по выбранному периоду ( день, неделя или месяц )
+    // 2) Группирует продукты по времени приёма пищи ( завтрак, обед и ужин ) 
+    // 3) Суммирует калории и сравнивает их с расчётом BMR и целевыми калориями пользователя
+    // 4) Возвращает результат статистики
     public class CalculateStatisticsService: ICalculateStatisticsService
     {
         private readonly ICalorieCalculator _calorieCalculator;
@@ -18,15 +23,15 @@ namespace Services.Business
             DateTime now = DateTime.Now;
             DateTime startDate = choice switch
             {
-                "1" => now.Date,
-                "2" => now.Date.AddDays(-7),
-                "3" => now.Date.AddMonths(-1),
+                "1" => now.Date, // день 
+                "2" => now.Date.AddDays(-7), // неделя
+                "3" => now.Date.AddMonths(-1), // месяц
                 _ => now.Date
             };
             var foods = await _foodRepository.GetAllFoodsAsync();
             var foodsInPeriod = foods.Where(f => f.Date >= startDate && f.Date <= now && f.UserName == user.Name).ToList();
 
-            if (!foodsInPeriod.Any())
+            if (!foodsInPeriod.Any()) // если список еды на эту дату пуст, то пишет Нет данных для выбранного периода
             {
                 return "Нет данных для выбранного периода.\n";
             }

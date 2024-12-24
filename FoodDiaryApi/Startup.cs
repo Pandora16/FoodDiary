@@ -20,14 +20,22 @@ namespace FoodDiaryApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<FoodDbContext>(options =>
-                options.UseSqlite("Data Source=C:\\Users\\cemad\\source\\repos\\FoodDiary\\DataBase\\foodDiary.db"));
+            // Создание DbContextOptions вручную
+            var optionsBuilder = new DbContextOptionsBuilder<FoodDbContext>();
+            optionsBuilder.UseSqlite("Data Source=C:\\Users\\cemad\\source\\repos\\FoodDiary\\DataBase\\foodDiary.db");
 
-            services.AddScoped<IFoodRepository, FoodRepository>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IFoodService, FoodService>();
-            services.AddScoped<ICalculateStatisticsService, CalculateStatisticsService>();
-            services.AddScoped<ICalorieCalculator, CalorieCalculator>();
+            // Регистрация фабрики как Singleton
+            services.AddSingleton<IFoodDbContextFactory>(provider =>
+            {
+                return new DbContextFactory(optionsBuilder.Options);
+            });
+
+            // Регистрация репозиториев и сервисов как Singleton
+            services.AddSingleton<IFoodRepository, FoodRepository>();
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IFoodService, FoodService>();
+            services.AddSingleton<ICalculateStatisticsService, CalculateStatisticsService>();
+            services.AddSingleton<ICalorieCalculator, CalorieCalculator>();
 
             services.AddControllers();
 
@@ -49,7 +57,7 @@ namespace FoodDiaryApi
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Shopper API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FoodDiary API V1");
                 c.RoutePrefix = string.Empty;
             });
         }

@@ -7,27 +7,26 @@ namespace DataBase
 {
     public class FoodRepository : IFoodRepository
     {
-        private readonly FoodDbContext _context;
+        private readonly IFoodDbContextFactory _dbContextFactory;
         private readonly ILogger<FoodRepository> _logger;
 
-        public FoodRepository(FoodDbContext context, ILogger<FoodRepository> logger)
+        public FoodRepository(IFoodDbContextFactory dbContextFactory, ILogger<FoodRepository> logger)
         {
-            _context = context;
+            _dbContextFactory = dbContextFactory;
             _logger = logger;
         }
-        private async Task<int> GenerateNewIdAsync<TEntity>() where TEntity : class
-        {
-            // Получаем максимальный ID для указанной сущности
-            var maxId = await _context.Set<TEntity>().MaxAsync(e => (int?)typeof(TEntity).GetProperty("Id").GetValue(e)) ?? 0;
-            return maxId + 1;
-        }
+
+        //  Добавление данных: AddFoodAsyn добавляет новую запись о продукте в базу данных
+        // 1. Создает новый экземпляр контекста базы данных через фабрику
+        // 2. Добавляет объект `food` в таблицу `Foods`
+        // 3. Сохраняет изменения в базе данных SaveChangesAsync()
         public async Task AddFoodAsync(Food food)
         {
-            food.Id = await GenerateNewIdAsync<Food>();
             try
             {
-                await _context.Foods.AddAsync(food);
-                await _context.SaveChangesAsync();
+                using var context = _dbContextFactory.CreateDbContext();
+                await context.Foods.AddAsync(food);
+                await context.SaveChangesAsync();
                 _logger.LogInformation("Продукт успешно добавлен.");
             }
             catch (Exception ex)
@@ -37,18 +36,24 @@ namespace DataBase
             }
         }
 
+        //Получение данных: GetAllFoodsAsync возвращает все записи из таблицы Foods с использованием ToListAsync()
         public async Task<List<Food>> GetAllFoodsAsync()
         {
-            return await _context.Foods.ToListAsync();
+            using var context = _dbContextFactory.CreateDbContext();
+            return await context.Foods.ToListAsync();
         }
 
+        //  Добавление данных: AddUserAsync добавляет новую запись о пользователе в базу данных
+        // 1. Создает новый экземпляр контекста базы данных через фабрику
+        // 2. Добавляет объект `user` в таблицу `Users`
+        // 3. Сохраняет изменения в базе данных SaveChangesAsync()
         public async Task AddUserAsync(User user)
         {
-            user.Id = await GenerateNewIdAsync<User>();
             try
             {
-                await _context.Users.AddAsync(user);
-                await _context.SaveChangesAsync();
+                using var context = _dbContextFactory.CreateDbContext();
+                await context.Users.AddAsync(user);
+                await context.SaveChangesAsync();
                 _logger.LogInformation("Пользователь успешно добавлен.");
             }
             catch (Exception ex)
@@ -58,14 +63,18 @@ namespace DataBase
             }
         }
 
+        // Метод возвращает всех пользователей 
         public async Task<List<User>> LoadUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            using var context = _dbContextFactory.CreateDbContext();
+            return await context.Users.ToListAsync();
         }
+
+        // Метод проверяет, существует ли пользователь с заданным именем
         public async Task<bool> UserExistsAsync(string userName)
         {
-            return await _context.Users.AnyAsync(u => u.Name == userName);
+            using var context = _dbContextFactory.CreateDbContext();
+            return await context.Users.AnyAsync(u => u.Name == userName);
         }
     }
-
 }

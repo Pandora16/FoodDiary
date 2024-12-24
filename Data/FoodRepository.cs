@@ -110,12 +110,22 @@ namespace Data
             var (users, foods) = await LoadDataAsync();
             return users;
         }
+
+        // Проверка существования пользователя
+        // 1) Загружает данные пользователей через LoadDataAsync
+        // 2) Проверяет, существует ли пользователь с указанным именем
         public async Task<bool> UserExistsAsync(string userName)
         {
             try
             {
-                var (users, _) = await LoadDataAsync(); 
-                return users.Any(u => u.Name.Equals(userName, StringComparison.OrdinalIgnoreCase)); 
+                var (users, _) = await LoadDataAsync();
+                foreach (var user in users)
+                {
+                    // Методом сравнения .Equals проверяем, равны ли строки user.Name и userName, игнорируя регистр символов
+                    if (user.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                        return true;
+                }
+                return false;
             }
             catch (Exception ex)
             {
@@ -123,15 +133,27 @@ namespace Data
                 throw;
             }
         }
+
+        // Метод генерирует ID пользователя
+        // 1) Загружает всех пользователей (синхронно через .Result)
+        // 2) Если пользователей нет, возвращает 1; иначе возвращает максимальный Id + 1
         private int GenerateUserId()
         {
-            var users = LoadUsersAsync().Result;
-            return users.Count == 0 ? 1 : users.Max(u => u.Id) + 1; 
+            var users = LoadUsersAsync().Result;  
+            if (users.Count == 0)
+                return 1;
+            else
+                return users.Max(u => u.Id) + 1;
         }
 
+        // Метод генерирует ID еды 
+        // 1) Если список foods пустой, возвращает 1; иначе возвращает максимальный Id + 1
         private int GenerateFoodId(List<Food> foods)
         {
-            return foods.Count == 0 ? 1 : foods.Max(f => f.Id) + 1;
+            if (foods.Count == 0)
+                return 1;
+            else
+                return foods.Max(f => f.Id) + 1;
         }
 
         public class FoodDiaryData
