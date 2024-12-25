@@ -4,10 +4,12 @@ using Core.Interfaces.UI;
 using Core.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Services
 {
-    public class UserCreator : IUserCreator
+    [ExcludeFromCodeCoverage]
+   public class UserCreator : IUserCreator
     {
         private readonly IUserInputManager _inputManager;
         private readonly ICalorieCalculator _calorieCalculator;

@@ -10,6 +10,7 @@ namespace Core.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public required string Name { get; set; }
+        [Required]
         public string UserName { get; set; }
         public double Calories { get; set; }
         public double Proteins { get; set; }

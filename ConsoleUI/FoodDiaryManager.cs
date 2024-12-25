@@ -2,9 +2,11 @@
 using Core.Interfaces.UI;
 using Core.Models;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Services
 {
+    [ExcludeFromCodeCoverage]
     public class FoodDiaryManager : IFoodDiaryManager
     {
         private readonly IFoodManagementService _foodManagementService;

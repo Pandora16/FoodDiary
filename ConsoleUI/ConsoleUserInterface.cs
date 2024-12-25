@@ -1,7 +1,9 @@
 ﻿using Core.Interfaces.UI;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ConsoleUI
 {
+    [ExcludeFromCodeCoverage]
     public class ConsoleUserInterface : IUserInterface
     {
         public async Task<string> ReadInputAsync()

@@ -11,9 +11,11 @@ using Microsoft.Extensions.Configuration;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.UI;
 using Core.Interfaces.Services;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FoodDiaryDb
 {
+    [ExcludeFromCodeCoverage]
     internal static class Program
     {
         static async Task Main(string[] args)
@@ -37,8 +39,14 @@ namespace FoodDiaryDb
                     });
 
                     // Регистрация репозиториев и сервисов
-                    // AddSingleton - Объект создается один раз за время жизни приложения
-                    // АddScoped - объект хранит данные, которые должны быть уникальны для каждой операции --> не подходит
+                    // 1) AddScoped - объект хранит данные, которые должны быть уникальны для каждой операции
+                    // 2) AddSingleton - Объект создается один раз за время жизни приложения
+                    // Почему AddSingleton?
+                    // Приложение консольное. Оно запускается, выполняет задачи и завершается.
+                    // Все операции выполняются в одном процессе, поэтому нет необходимости создавать новые объекты для каждой операции.
+                    // Использование одного экземпляра для всех операций повышает производительность, т.к. нет необходимости в создании новых объектов при каждом запросе.
+                    // Сервисы (например, StatisticsService) не хранят данных, уникальных для каждой операции.
+                    // Они предоставляют функционал (например, статистика), который можно безопасно использовать многократно.
                     services.AddSingleton<IFoodRepository, FoodRepository>();
                     services.AddSingleton<IUserInputManager, UserInputManager>();
                     services.AddSingleton<ICalorieCalculator, CalorieCalculator>();

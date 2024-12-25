@@ -3,9 +3,11 @@ using Core.Interfaces.Services;
 using Core.Interfaces.UI;
 using Core.Models;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Services.Utility
 {
+    [ExcludeFromCodeCoverage]
     public class UserDataInitializer : IUserDataInitializer
     {
         private readonly IFoodRepository _foodRepository;
