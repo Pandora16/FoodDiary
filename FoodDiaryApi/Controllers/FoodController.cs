@@ -57,7 +57,7 @@ namespace FoodDiaryApi.Controllers
         }
 
         //
-        [HttpPost("statistics")] 
+        [HttpGet("statistics")] 
         // [FromQuery] - Используется для передачи: Простых данных (например, строк, чисел). В статистике как раз такое.
         public async Task<IActionResult> GetStatistics([FromQuery] string userName, [FromQuery] string choice)
         {

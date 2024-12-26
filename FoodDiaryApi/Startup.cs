@@ -6,9 +6,11 @@ using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Services.Business;
 using Services.Utility;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FoodDiaryApi
 {
+    [ExcludeFromCodeCoverage]
     // главный класс для настройки приложения
     public class Startup
     {
@@ -24,7 +26,7 @@ namespace FoodDiaryApi
             // Создание DbContextOptions вручную
             var optionsBuilder = new DbContextOptionsBuilder<FoodDbContext>();
             // Используется база данных SQLite
-            optionsBuilder.UseSqlite("Data Source=C:\\Users\\cemad\\source\\repos\\FoodDiary\\DataBase\\foodDiary.db");
+            optionsBuilder.UseSqlite("Data Source=C:\\Users\\79217\\source\\repos\\FoodDiary\\DataBase\\foodDiary.db");
 
             // Регистрация фабрики как Singleton
             services.AddSingleton<IFoodDbContextFactory>(provider =>
